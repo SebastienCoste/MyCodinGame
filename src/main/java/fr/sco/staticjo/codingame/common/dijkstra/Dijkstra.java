@@ -2,11 +2,8 @@ package fr.sco.staticjo.codingame.common.dijkstra;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.apache.commons.collections.ComparatorUtils;
 
 import fr.sco.staticjo.codingame.common.dijkstra.Dijkstra.Tree.Node;
 
@@ -26,7 +23,6 @@ public class Dijkstra{
 		long getWeightToTheNextStep();
 		long getEstimatedWeightToTheEnd(LeafInter end);
 		List<LeafInter>getAllMatchingNeighbours(LeafInter[][] map);
-		int compareTo(LeafInter arg0);
 		boolean isTheEnd(LeafInter end);
 	}
 	
@@ -60,8 +56,9 @@ public class Dijkstra{
 			}
 
 			@Override
-			public int compareTo(Object arg0) {
-				return this.data.compareTo(((Node<T>)arg0).data);
+			public int compareTo(Object o) {
+				Node<T> test = (Node<T>) o;
+				return Long.compare(currentWeight + estimatedWeightLeft, test.currentWeight + test.estimatedWeightLeft);
 			}
 
 	    }
@@ -89,11 +86,15 @@ public class Dijkstra{
 		Node<LeafInter> bestLeaf = tree.root;
 		
 		while (! bestLeaf.data.isTheEnd(end)){
+			leavesToAnalyse.remove(0);
 			insertInLeavesToAnalyse(getChildrenAsLeaves(bestLeaf));
 			bestLeaf = leavesToAnalyse.get(0);
-			leavesToAnalyse.remove(0);
 		}
-		
+
+		while (bestLeaf.parent != null){
+			path.add(bestLeaf.data);
+			bestLeaf = bestLeaf.parent;
+		}
 		Collections.reverse(path);
 		return path;
 	}
