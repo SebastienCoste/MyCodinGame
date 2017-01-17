@@ -4,6 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+	/**
+	 * 
+	 * @author Static
+	 *
+	 * My answer to https://www.codingame.com/training/medium/the-last-crusade-episode-1
+	 */
 public class TheLastCrusade {
 
 	public static void main(String args[]) {
