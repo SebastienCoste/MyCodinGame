@@ -129,13 +129,13 @@ class Player{
 					Coord wall = null;
 					Direction dir = null;
 					int i=0;
-					while(!wallValid(wall) && i< pathPerPlayer.get(fastest).size()-1){
+					while(!wallValid(wall, dir) && i< pathPerPlayer.get(fastest).size()-1){
 						Coord source = ((Point)pathPerPlayer.get(fastest).get(i)).c;
 						dir = source.getDirectionTo(((Point)pathPerPlayer.get(fastest).get(i+1)).c);
 						wall = getCoordWall(source, dir, allEnd.get(fastest));
 						i++;
 					}
-					if (!wallValid(wall)){
+					if (!wallValid(wall, dir)){
 						System.out.println(allStart.get(myNumber).getDirectionTo(((Point)pathPerPlayer.get(myNumber).get(0)).c));
 					} else {
 						System.out.println(wall.x + " " + wall.y + " " + (dir == Direction.UP || dir == Direction.DOWN ? "H" : "V"));
@@ -146,8 +146,20 @@ class Player{
 		}
 	}
 
-	private static boolean wallValid(Coord wall) {
-		return false;
+	private static boolean wallValid(Coord wall, Direction dir) {
+		if (wall == null || dir == null){
+			return false;
+		}
+		switch (dir) {
+		case UP:
+		case DOWN:
+			return blockedLinks.get(wall) == null && blockedLinks.get(new Coord(wall.x, wall.y+1)) == null;
+		case LEFT:
+		case RIGHT:
+			return blockedLinks.get(wall) == null && blockedLinks.get(new Coord(wall.x+1, wall.y)) == null;
+		default :
+			return false;
+		}
 	}
 
 	private static void addWall(Coord coord, String dir) {
