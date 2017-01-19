@@ -1,4 +1,4 @@
-package fr.sco.test;
+package fr.sco.staticjo.codingame.multiplayer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,10 +14,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 /**
- * Auto-generated code below aims at helping you parse
- * the standard input according to the problem statement.
+ * @author static
+ * My answer to  https://www.codingame.com/multiplayer/bot-programming/great-escape
  **/
-class Player{
+class TheGreatEscape{
 
 
 	private static Map <Coord, Set<Coord>> blockedLinks = new HashMap<>();
