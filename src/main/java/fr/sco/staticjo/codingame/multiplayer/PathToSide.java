@@ -1,7 +1,9 @@
-package fr.sco.test;
+package fr.sco.staticjo.codingame.multiplayer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,45 +19,164 @@ import fr.sco.test.PathToSide.Tree.Node;
  *  
  * @author Static
  *
- *  Find the shortest path to the side of the map, with obstacles
+ * Common class used to find the lightest path in a tree 
  */
 public class PathToSide{
 
 
 	private static Map <Coord, List<Coord>> blockedLinks = new HashMap<>();
-	static boolean[][] mapSeen = new boolean[9][9];
-	
-	public static void main(String[] args) {
-		
-		LeafInter[][] map = new Point[9][9];
-		IntStream.range(0, 9).forEach(i -> IntStream.range(0, 9).forEach(j -> mapSeen[i][j] = false));
-		LeafInter start = new Point(new Coord(0, 0));
-		LeafInter end = new Point(new Coord(9, null));
-		
-		blockedLinks.put(((Point) start).c, Arrays.asList(new Coord(1, 0)));
-		blockedLinks.put(new Coord(0, 1), Arrays.asList(new Coord(1, 1)));
-		List<LeafInter> path = null;
-		try {
-			PathToSide dij = new PathToSide(map, start, end);
-			path = dij.buildTheTreeForThePathToTheEnd();
-		} catch (DijkstraException e) {
-		}
-		path.stream().forEach(e -> System.out.println(e));
-	}
-	
-	
-	public static class Coord{
-		
+	static Map<Integer, boolean[][]> mapSeen = new HashMap<>();
 
+	public static void main(String[] args) {
+
+		LeafInter[][] map = new Point[9][9];
+		int nbrPlayer = 3;
+		int myNumber = 0;
+		int myRemainingWalls = 1;
+
+		long init = new Date().getTime();
+		IntStream.range(0, nbrPlayer).forEach(p -> mapSeen.put(p, new boolean[9][9]));
+
+		Map<Integer, List<LeafInter>> pathPerPlayer = new HashMap<>();
+
+
+		blockedLinks.put(new Coord(0, 0), Arrays.asList(new Coord(1, 0)));
+		blockedLinks.put(new Coord(0, 1), Arrays.asList(new Coord(1, 1)));
+		blockedLinks.put(new Coord(1, 2), Arrays.asList(new Coord(2, 2)));
+		blockedLinks.put(new Coord(1, 3), Arrays.asList(new Coord(2, 3)));
+		blockedLinks.put(new Coord(2, 5), Arrays.asList(new Coord(3, 5)));
+		blockedLinks.put(new Coord(2, 6), Arrays.asList(new Coord(3, 6)));
+		blockedLinks.put(new Coord(3, 4), Arrays.asList(new Coord(4, 4)));
+		blockedLinks.put(new Coord(3, 5), Arrays.asList(new Coord(4, 5)));
+
+		//		List<Coord> allStart = new ArrayList<>(nbrPlayer);
+		//		List<Coord> allEnd = new ArrayList<>(nbrPlayer);
+
+		//Test
+		List<Coord> allStart = Arrays.asList(new Coord(0, 0), new Coord(0, 1), new Coord(0, 2));
+		List<Coord> allEnd = Arrays.asList(new Coord(8, null), new Coord(8, null), new Coord(8, 8));
+		//Fin test
+
+		IntStream.range(0, nbrPlayer)
+		.forEach(p -> pathPerPlayer.put(p,
+				new PathToSide(map, new Point(allStart.get(p), p), new Point(allEnd.get(p), p))
+				.buildTheTreeForThePathToTheEnd()));
+
+
+
+		pathPerPlayer.keySet()
+		.forEach(k -> {
+			System.err.println("player: " + k + " size " + pathPerPlayer.get(k).size());
+			pathPerPlayer.get(k)
+			.stream()
+			.forEach(e -> System.err.println(e));
+		}
+				);
+
+		int fastest = myNumber;
 		
+		if (myRemainingWalls >0){
+			Comparator<Integer> compOnPath = getPlayerComparator(pathPerPlayer);
+			List<Integer> orderedPlayers = IntStream.range(0, nbrPlayer).boxed().collect(Collectors.toList());
+			orderedPlayers.sort(compOnPath);
+			System.err.println(orderedPlayers.toString());
+			fastest = orderedPlayers.get(0);
+		}
+		if (fastest == myNumber){
+			System.out.println(allStart.get(myNumber).getDirectionTo(((Point)pathPerPlayer.get(myNumber).get(0)).c));
+		} else {
+			List<LeafInter> fastpath = pathPerPlayer.get(fastest);
+			if (fastpath.size() <2){
+				System.out.println(allStart.get(myNumber).getDirectionTo(((Point)pathPerPlayer.get(myNumber).get(0)).c));
+			} else {
+				Coord source = ((Point)pathPerPlayer.get(fastest).get(1)).c;
+				Direction dir = source.getDirectionTo(((Point)pathPerPlayer.get(fastest).get(2)).c);
+				Coord wall = getCoordWall(source, dir, allEnd.get(fastest));
+				System.out.println(wall.x + " " + wall.y + " " + (dir == Direction.UP || dir == Direction.DOWN ? "H" : "V"));
+			}
+		}
+		System.err.println("TOTAL: " + (new Date().getTime() - init));
+	}
+
+	private static Coord getCoordWall(Coord source, Direction dir, Coord end) {
+		int x = source.x;
+		int y = source.y;
+		switch (dir) {
+		case UP:
+			y--;
+			if (x == 0 || (end.x != null && end.x < x)){
+				x--;
+			}
+			return new Coord(x, y);
+		case DOWN:
+			y++;
+			if (x == 0 || (end.x != null && end.x < x)){
+				x--;
+			}
+			return new Coord(x, y);
+		case LEFT:
+			x--;
+			if (y == 0 || (end.y != null && end.y > y)){
+				y++;
+			}
+			return new Coord(x, y);
+		case RIGHT:
+			x++;
+			if (y == 0 || (end.y != null && end.y > y)){
+				y++;
+			}
+			return new Coord(x, y);
+		default:
+			return null;
+		}
+	}
+
+	private static Comparator<Integer> getPlayerComparator(Map<Integer, List<LeafInter>> pathPerPlayer) {
+		Comparator<Integer> compOnPath = new Comparator<Integer>() {
+
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				return Integer.valueOf(pathPerPlayer.get(o1).size()).compareTo(pathPerPlayer.get(o2).size());
+			}
+		};
+		return compOnPath;
+	}
+
+
+	public static enum Direction {
+		UP,
+		DOWN,
+		LEFT,
+		RIGHT;
+	}
+
+	public static class Coord{
+
+
+
 		public Integer x;
 		public Integer y;
-		
+
 		public Coord (Integer x, Integer y){
 			this.x = x;
 			this.y = y;
 		}
-		
+
+		public Direction getDirectionTo(Coord dest){
+
+			if (x == dest.x){
+				if (y > dest.y){
+					return Direction.UP;
+				} else {
+					return Direction.DOWN;
+				}
+			} else if (x < dest.x){
+				return Direction.RIGHT;
+			} else {
+				return Direction.LEFT;
+			}
+		}
+
 		public boolean matches (Coord test){
 			if (test == null){
 				return false;
@@ -66,12 +187,12 @@ public class PathToSide{
 			return (test.x == null && y == test.y)
 					|| (test.y == null && x == test.x);
 		}
-		
+
 		@Override
 		public String toString() {
 			return "Coord [x=" + x + ", y=" + y + "]";
 		}
-		
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -96,14 +217,16 @@ public class PathToSide{
 			return true;
 		}
 	}
-	
-	
+
+
 	public static class Point implements LeafInter{
 
 		public Coord c;
-		
-		public Point(Coord c){
+		public Integer user;
+
+		public Point(Coord c, Integer user){
 			this.c = c;
+			this.user = user;
 		}
 		@Override
 		public long getWeightToTheNextStep() {
@@ -128,10 +251,10 @@ public class PathToSide{
 		public String toString() {
 			return "Point [c=" + c + "]";
 		}
-		
+
 		@Override
 		public List<LeafInter> getAllMatchingNeighbours(LeafInter[][] map) {
-			
+
 			List<LeafInter> res = new ArrayList<>();
 			List<Coord> blocks = blockedLinks.get(c);
 			Coord left = new Coord(c.x-1, c.y);
@@ -139,20 +262,20 @@ public class PathToSide{
 			Coord up = new Coord(c.x, c.y-1);
 			Coord down = new Coord(c.x, c.y+1);
 			if (c.x >0 && (blocks== null || !blocks.contains(left))){
-//				res.add(map[left.x][left.y]);
-				res.add(new Point(left));
+				//				res.add(map[left.x][left.y]);
+				res.add(new Point(left, user));
 			}
 			if (c.x <map.length && (blocks== null || !blocks.contains(right))){
-//				res.add(map[right.x][right.y]);
-				res.add(new Point(right));
+				//				res.add(map[right.x][right.y]);
+				res.add(new Point(right, user));
 			}
 			if (c.y >0 && (blocks== null || !blocks.contains(up))){
-//				res.add(map[up.x][up.y]);
-				res.add(new Point(up));
+				//				res.add(map[up.x][up.y]);
+				res.add(new Point(up, user));
 			}
 			if (c.y<map[0].length && (blocks== null || !blocks.contains(down))){
-//				res.add(map[down.x][down.y]);
-				res.add(new Point(down));
+				//				res.add(map[down.x][down.y]);
+				res.add(new Point(down, user));
 			}
 			return res;
 		}
@@ -164,18 +287,17 @@ public class PathToSide{
 
 		@Override
 		public void seen(boolean hasBeenSeen) {
-			mapSeen[c.x][c.y] = hasBeenSeen;
+			mapSeen.get(user)[c.x][c.y] = hasBeenSeen;
 		}
 
 		@Override
 		public boolean canBeTreated() {
-			return !mapSeen[c.x][c.y];
+			return !mapSeen.get(user)[c.x][c.y];
 		}
-		
+
 	}
-	
-	public class DijkstraException extends Exception {}
-	
+
+
 	public interface LeafInter {
 
 		long getWeightToTheNextStep();
@@ -233,9 +355,9 @@ public class PathToSide{
 	public LeafInter end;
 	public List<Node<LeafInter>> leavesToAnalyse;
 
-	public PathToSide(LeafInter[][] map, LeafInter start, LeafInter end) throws DijkstraException{
+	public PathToSide(LeafInter[][] map, LeafInter start, LeafInter end) {
 		if (!end.isTheEnd(end)){
-			throw new DijkstraException();
+			return ;
 		}
 		tree = new Tree<LeafInter>(start, end);
 		this.map = map;
@@ -293,7 +415,7 @@ public class PathToSide{
 		insertInLeavesToAnalyse(bestLeaf);
 		return leavesToAnalyse.get(0);
 	}
-	
+
 	private List<Node<LeafInter>> getChildrenAsLeaves(Node<LeafInter> bestLeaf) {
 		if (bestLeaf.children == null || bestLeaf.children.size() == 0){
 			bestLeaf.children = bestLeaf.data.getAllMatchingNeighbours(map)
@@ -312,4 +434,5 @@ public class PathToSide{
 		leavesToAnalyse.add(node);
 		Collections.sort(leavesToAnalyse);
 	}
+
 }
