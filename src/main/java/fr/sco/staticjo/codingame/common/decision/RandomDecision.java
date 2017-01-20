@@ -87,6 +87,7 @@ public class RandomDecison {
 			}
 			if (bestScore < score){
 				bestActions = actionList;
+				bestScore = score;
 			}
 			
 		}
