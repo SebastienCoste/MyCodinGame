@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class RandomDecison {
+public class RandomDecision {
 
 
 	public enum Limit{
@@ -60,7 +60,7 @@ public class RandomDecison {
 
 	public World world;
 
-	public RandomDecison(World world){
+	public RandomDecision(World world){
 		this.world = world;
 
 	}
