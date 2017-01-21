@@ -77,10 +77,7 @@ public class Dijkstra{
 	public LeafInter end;
 	public List<Node<LeafInter>> leavesToAnalyse;
 
-	public Dijkstra(LeafInter[][] map, LeafInter start, LeafInter end) throws DijkstraException{
-		if (!end.isTheEnd(end)){
-			throw new DijkstraException();
-		}
+	public Dijkstra(LeafInter[][] map, LeafInter start, LeafInter end) {
 		tree = new Tree<LeafInter>(start, end);
 		this.map = map;
 		this.end = end;
@@ -95,7 +92,7 @@ public class Dijkstra{
 
 		while (!bestLeaf.data.isTheEnd(end)){
 			Iterator<Node<LeafInter>> it = leavesToAnalyse.iterator();
-			while(it.hasNext() && it.next().data.canBeTreated()){
+			while(it.hasNext() && !it.next().data.canBeTreated()){
 				it.remove();
 			}
 			if (leavesToAnalyse.size() == 0){
@@ -107,6 +104,9 @@ public class Dijkstra{
 				leavesToAnalyse.remove(0);
 				bestLeaf.data.seen(true);
 				List<Node<LeafInter>> childrenAsLeaves = getChildrenAsLeaves(bestLeaf);
+				if (childrenAsLeaves != null && bestLeaf.parent != null){
+					removeLeaf(bestLeaf, childrenAsLeaves);
+				}
 				if (childrenAsLeaves != null && childrenAsLeaves.size() > 0){
 					insertInLeavesToAnalyse(childrenAsLeaves);
 					bestLeaf = leavesToAnalyse.get(0);
@@ -120,15 +120,25 @@ public class Dijkstra{
 			path.add(bestLeaf.data);
 			bestLeaf = bestLeaf.parent;
 		}
+		path.add(bestLeaf.data);
 		Collections.reverse(path);
 		return path;
+	}
+
+	private void removeLeaf(Node<LeafInter> bestLeaf, List<Node<LeafInter>> childrenAsLeaves) {
+		Iterator<Node<LeafInter>> itChild = childrenAsLeaves.iterator();
+		while(itChild.hasNext()){
+			if (itChild.next().data.equals(bestLeaf.parent.data)){
+				itChild.remove();
+			}
+		}
 	}
 
 	private Node<LeafInter> cutTheTree(Node<LeafInter> bestLeaf){
 		while (bestLeaf.parent.children.size() == 1){
 			bestLeaf = bestLeaf.parent;
 		}
-		bestLeaf.parent.children.remove(bestLeaf);
+		removeLeaf(bestLeaf, bestLeaf.parent.children);
 		bestLeaf = bestLeaf.parent;
 		bestLeaf.data.seen(false);
 		insertInLeavesToAnalyse(bestLeaf);
@@ -152,7 +162,6 @@ public class Dijkstra{
 		leavesToAnalyse.add(node);
 		Collections.sort(leavesToAnalyse);
 	}
-
 
 
 }

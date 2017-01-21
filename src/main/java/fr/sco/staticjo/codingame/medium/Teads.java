@@ -1,50 +1,70 @@
 package fr.sco.staticjo.codingame.medium;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
+import java.math.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
-
-public class Teads {
+	/**
+	 * 
+	 * @author Static
+	 *
+	 * My solution to https://www.codingame.com/ide/6703989cde3227741b2916e7a203964375ed289
+	 */
+class Teads {
 
 	static List<Point> extreme;
 	static int total;
 
 	public static void main(String args[]) {
+
+		//DataTest
+		total = 21;
+		List<Integer> alLX = Arrays.asList(0,0,0,1,1,2,2,5,5,8,8,9,9,12,12,15,15,16,16,19,19);
+		List<Integer> alLY = Arrays.asList(1,8,15,2,5,3,4,6,7,9,12,10,11,13,14,16,19,17,18,20,21);
+		StringBuilder inx = new StringBuilder();
+		StringBuilder iny = new StringBuilder();
+		//End test
+
 		Scanner in = new Scanner(System.in);
-		total = in.nextInt(); // the number of adjacency relations
+		//				total = in.nextInt(); // the number of adjacency relations
+		System.err.println(total);
 		Point[][] link = new Point[2][total];
 		Map<Point, Integer> encounterMap = new HashMap<>();
+
+		
 		for (int i = 0; i < total; i++) {
-			Point xi =  new Point(in.nextInt()); // the ID of a person which is adjacent to yi
-			Point yi = new Point(in.nextInt()); // the ID of a person which is adjacent to xi
+			//						Point xi =  new Point(in.nextInt()); // the ID of a person which is adjacent to yi
+			//						Point yi = new Point(in.nextInt()); // the ID of a person which is adjacent to xi
+			Point xi =  new Point(alLX.get(i)); // the ID of a person which is adjacent to yi
+			Point yi = new Point(alLY.get(i)); // the ID of a person which is adjacent to xi
+			inx.append(xi.number).append(",");
+			inx.append(yi.number).append(",");
 			link[0][i] = xi;
 			link[1][i] = yi;
 			incEncoutnerNumber(encounterMap, xi);
 			incEncoutnerNumber(encounterMap, yi);
 		}
+		System.err.println(inx);
+		System.err.println(iny);
+		
 		extreme = encounterMap.keySet().stream().filter(k -> encounterMap.get(k) == 1).collect(Collectors.toList());
 
-		
+
+
 		int longestShortPath = IntStream.range(0, extreme.size())
-			.map(start -> 
-						IntStream.range(start, extreme.size())
-						.map(end -> 
-								new Dijkstra(link, extreme.get(start), extreme.get(end)).buildTheTreeForThePathToTheEnd().size()
-							)
-						.reduce((x,y) -> x > y ? x : y)
-						.getAsInt()
-					)
-			.reduce((x,y) -> x > y ? x : y)
-			.getAsInt();
-		
+				.mapToObj(start -> 
+				IntStream.range(start+1, extreme.size())
+				.map(end -> 
+				new Dijkstra(link, extreme.get(start), extreme.get(end)).buildTheTreeForThePathToTheEnd().size()
+						)
+				.max()
+						)
+				.filter(op -> op.isPresent())
+				.mapToInt(o -> o.getAsInt())
+				.max().getAsInt() -1;
 
 
 		System.out.println(longestShortPath%2 == 0 ? longestShortPath/2 : longestShortPath/2 +1);
@@ -55,17 +75,21 @@ public class Teads {
 
 		Integer total = encounterMap.get(number);
 		if (total == null){
-			total = new Integer(1);
-			encounterMap.put(number, total);
-		} else {
-			total++;
+			total = new Integer(0);
 		}
+		total++;
+		encounterMap.put(number, total);
 
 	}
 
 
 
 	public static class Point implements LeafInter{
+
+		@Override
+		public String toString() {
+			return "P[" + number + "]";
+		}
 
 		int number;
 
@@ -108,14 +132,14 @@ public class Teads {
 		@Override
 		public List<LeafInter> getAllMatchingNeighbours(LeafInter[][] map) {
 			return IntStream.range(0, total)
-			.mapToObj(i -> getPoint(map, i))
-			.filter(p -> p != null)
-			.collect(Collectors.toList());
+					.mapToObj(i -> getPoint(map, i))
+					.filter(p -> p != null)
+					.collect(Collectors.toList());
 		}
 		private LeafInter getPoint(LeafInter[][] map, int i) {
 			if (this.equals(map[1][i])){
-				return map[2][i];
-			}else if (this.equals(map[2][i])){
+				return map[0][i];
+			}else if (this.equals(map[0][i])){
 				return map[1][i];
 			} else {
 				return null;
@@ -126,35 +150,9 @@ public class Teads {
 		public boolean isTheEnd(LeafInter end) {
 			return this.equals(end);
 		}
-
-		@Override
-		public void seen(boolean hasBeenSeen) {
-			//Useless because no cycling 
-		}
-
-		@Override
-		public boolean canBeTreated() {
-			return true;
-		}
-
-
 	}
 
 
-
-
-
-
-
-
-
-
-
-
-
-	//Below my generic script
-
-	public class DijkstraException extends Exception {}
 
 	public interface LeafInter {
 
@@ -162,8 +160,6 @@ public class Teads {
 		long getEstimatedWeightToTheEnd(LeafInter end);
 		List<LeafInter>getAllMatchingNeighbours(LeafInter[][] map);
 		boolean isTheEnd(LeafInter end);
-		void seen(boolean hasBeenSeen);
-		boolean canBeTreated(); //For example if you don't want to treat an alrealy seen leaf
 	}
 
 	public static class Tree<T extends LeafInter> {
@@ -215,6 +211,7 @@ public class Teads {
 		public Tree<LeafInter> tree;
 		public LeafInter end;
 		public List<Node<LeafInter>> leavesToAnalyse;
+		public Set<LeafInter> leafSeen;
 
 		public Dijkstra(LeafInter[][] map, LeafInter start, LeafInter end) {
 			tree = new Tree<LeafInter>(start, end);
@@ -222,6 +219,7 @@ public class Teads {
 			this.end = end;
 			leavesToAnalyse = new ArrayList<>();
 			leavesToAnalyse.add(tree.root);
+			leafSeen = new HashSet<>();
 		}
 
 		public List<LeafInter> buildTheTreeForThePathToTheEnd(){
@@ -230,24 +228,25 @@ public class Teads {
 			Node<LeafInter> bestLeaf = tree.root;
 
 			while (!bestLeaf.data.isTheEnd(end)){
-				Iterator<Node<LeafInter>> it = leavesToAnalyse.iterator();
-				while(it.hasNext() && it.next().data.canBeTreated()){
-					it.remove();
-				}
+				keepUnseenOnly(leavesToAnalyse);
 				if (leavesToAnalyse.size() == 0){
-					bestLeaf = cutTheTree(bestLeaf);
+//					bestLeaf = cutTheTree(bestLeaf); //Can't find a path
+					return path;
 				} else {
 					bestLeaf = leavesToAnalyse.get(0);
 				}
 				if(!bestLeaf.data.isTheEnd(end)){
 					leavesToAnalyse.remove(0);
-					bestLeaf.data.seen(true);
+					leafSeen(bestLeaf.data, true);
 					List<Node<LeafInter>> childrenAsLeaves = getChildrenAsLeaves(bestLeaf);
+					if (childrenAsLeaves != null && bestLeaf.parent != null){
+						removeLeaf(bestLeaf.parent, childrenAsLeaves);
+					}
 					if (childrenAsLeaves != null && childrenAsLeaves.size() > 0){
 						insertInLeavesToAnalyse(childrenAsLeaves);
-						bestLeaf = leavesToAnalyse.get(0);
-					} else {
-						bestLeaf = cutTheTree(bestLeaf);
+//						bestLeaf = leavesToAnalyse.get(0);
+//					} else {
+//						bestLeaf = cutTheTree(bestLeaf);
 					}
 				}
 			}
@@ -256,17 +255,48 @@ public class Teads {
 				path.add(bestLeaf.data);
 				bestLeaf = bestLeaf.parent;
 			}
-			Collections.reverse(path);
+			path.add(bestLeaf.data);
+			//			Collections.reverse(path);
 			return path;
 		}
 
-		private Node<LeafInter> cutTheTree(Node<LeafInter> bestLeaf){
-			while (bestLeaf.parent.children.size() == 1){
-				bestLeaf = bestLeaf.parent;
+		private void removeLeaf(Node<LeafInter> bestLeaf, List<Node<LeafInter>> childrenAsLeaves) {
+			Iterator<Node<LeafInter>> itChild = childrenAsLeaves.iterator();
+			while(itChild.hasNext()){
+				if (itChild.next().data.equals(bestLeaf.data)){
+					itChild.remove();
+				}
 			}
-			bestLeaf.parent.children.remove(bestLeaf);
+		}
+
+		private void keepUnseenOnly(List<Node<LeafInter>> list){
+			if (list != null && list.size() >0){
+				Iterator<Node<LeafInter>> itChild = list.iterator();
+				while(itChild.hasNext()){
+					if (!canBeTreated(itChild.next().data)){
+						itChild.remove();
+					}
+				}
+			}
+		}
+
+		private Node<LeafInter> cutTheTree(Node<LeafInter> bestLeaf){
+			if (bestLeaf.parent == null){
+				return null; 
+			}
+				keepUnseenOnly(bestLeaf.parent.children);
+			while (bestLeaf.parent.children.size() == 0){
+				bestLeaf = bestLeaf.parent;
+				if (bestLeaf.parent != null){
+					keepUnseenOnly(bestLeaf.parent.children);
+				}
+				if (bestLeaf.parent == null){
+					return null; 
+				}
+			}
+			removeLeaf(bestLeaf, bestLeaf.parent.children);
 			bestLeaf = bestLeaf.parent;
-			bestLeaf.data.seen(false);
+			leafSeen(bestLeaf.data, false);
 			insertInLeavesToAnalyse(bestLeaf);
 			return leavesToAnalyse.get(0);
 		}
@@ -277,6 +307,7 @@ public class Teads {
 						.map(e -> new Node<LeafInter>(bestLeaf, bestLeaf.currentWeight, e, end))
 						.collect(Collectors.toList());
 			}
+			keepUnseenOnly(bestLeaf.children);
 			return bestLeaf.children;
 		}
 
@@ -288,7 +319,17 @@ public class Teads {
 			leavesToAnalyse.add(node);
 			Collections.sort(leavesToAnalyse);
 		}
-
+		void leafSeen(LeafInter leaf, boolean hasBeenSeen){
+			
+			if (hasBeenSeen){
+				leafSeen.add(leaf);
+			} else {
+				leafSeen.remove(leaf);
+			}
+		}
+		boolean canBeTreated(LeafInter leaf){
+			return !leafSeen.contains(leaf);
+		}
 
 
 	}
