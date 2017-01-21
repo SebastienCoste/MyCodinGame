@@ -21,7 +21,7 @@ public class ChessWorld implements World {
 
 	@Override
 	public Object getLimitIterationValue() {
-		return 11;
+		return 21;
 	}
 
 	@Override

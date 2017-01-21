@@ -44,7 +44,7 @@ public class RandomDecision {
 		while (cond.doContinue() && dataForActions != null && dataForActions.size() >0){
 			
 			tot.incrementAndGet();
-			System.out.println(depth + " - " + player.aff() + " " + cond.initValue);
+//			System.out.println(depth + " - " + player.aff() + " " + cond.initValue);
 			//Choose an action
 			int total = dataForActions.size();
 			int randomNum = ThreadLocalRandom.current().nextInt(0, total);

@@ -6,4 +6,6 @@ public interface PlayerProfile {
 		
 		return this.getClass().getSimpleName().toString();
 	}
+	
+	
 }
