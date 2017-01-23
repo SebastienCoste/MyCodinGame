@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import fr.sco.test.DepthFirst.Tree.Node;
+import fr.sco.staticjo.codingame.common.dfs.DepthFirst.Tree.Node;
 
 public class DepthFirst {
 	
