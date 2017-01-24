@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GolfMap {
 
@@ -13,50 +14,50 @@ public class GolfMap {
 	public static List<Move> dontLandOn = new ArrayList<>();
 	public static List<Move> dontFlyOver = new ArrayList<>(); //To use for optimisation
 
-	 public static void main(String args[]) {
-	        Scanner in = new Scanner(System.in);
-//	        int width = in.nextInt();
-//	        int height = in.nextInt();
-	        
-	        String[] test = new String[]{"2.X","X.H",".H1"};
-	        int width = 3;
-	        int height = 3;
-	        
-	        
-	        Board root = new Board(width, height);
-	        
-	        for (int i = 0; i < height; i++) {
-//	            String row = in.next();
-	        	String row = test[i];
-	        	
-	            for (int j = 0; j < width; j++) {
-	            	char currentChar = row.charAt(j);
-					if ('X' == currentChar){
-	            		withNoLandOn(j, i);
-	            	} else if ('H' == currentChar){
-	            		Move hole = withNoFlyOver(j, i);
-	            		root.allHoles.add(hole);
-	            	}  else if (!('.' == currentChar)){
-	            		Integer jump = Integer.valueOf(String.valueOf(currentChar));
-	            		BallTry ball = new BallTry();
-	            		ball.jumpsLeft = jump;
-	            		ball.order = jump;
-	            		Move move = new Move();
-	            		move.x = j;
-	            		move.y = i;
-						ball.lastTry = move;
-						root.allTriesLeft.add(ball);
-	            	}
-	            }
-	        }
-	        
-	        Collections.sort(root.allTriesLeft);
-	        
-	        DepthFirst search = new DepthFirst(root);
-	        List<LeafInter> result = search.buildTheTreeForThePathToTheEnd();
-	        System.out.println(result);
-	    }
-	 
+	public static void main(String args[]) {
+		Scanner in = new Scanner(System.in);
+		//	        int width = in.nextInt();
+		//	        int height = in.nextInt();
+
+		String[] test = new String[]{"2.X","X.H",".H1"};
+		int width = 3;
+		int height = 3;
+
+
+		Board root = new Board(width, height);
+
+		for (int i = 0; i < height; i++) {
+			//	            String row = in.next();
+			String row = test[i];
+
+			for (int j = 0; j < width; j++) {
+				char currentChar = row.charAt(j);
+				if ('X' == currentChar){
+					withNoLandOn(j, i);
+				} else if ('H' == currentChar){
+					Move hole = withNoFlyOver(j, i);
+					root.allHoles.add(hole);
+				}  else if (!('.' == currentChar)){
+					Integer jump = Integer.valueOf(String.valueOf(currentChar));
+					BallTry ball = new BallTry();
+					ball.jumpsLeft = jump;
+					ball.order = jump;
+					Move move = new Move();
+					move.x = j;
+					move.y = i;
+					ball.lastTry = move;
+					root.allTriesLeft.add(ball);
+				}
+			}
+		}
+
+		Collections.sort(root.allTriesLeft);
+
+		DepthFirst search = new DepthFirst(root);
+		LeafInter result = search.buildTheTreeForThePathToTheEnd();
+		System.out.println(result);
+	}
+
 	public static Move withNoFlyOver(int x, int y){
 		Move m = new Move();
 		m.x = x;
@@ -93,39 +94,39 @@ public class GolfMap {
 
 		}
 	}
-	
 
-	
+
+
 	public static class Segment{
-		
+
 		public int xmin, xmax, ymin, ymax; //*min <= *max
 		public Direction orientation; //Direction from (xmin, ymin) to (xmax, ymax). Only DOWN and Right then
-		
+
 		public boolean cross (Segment seg){
 			if (orientation == Direction.DOWN && seg.orientation == Direction.DOWN){
-				 return this.xmin == seg.xmin && 
-						 (
-						 (this.ymin >= seg.ymin && this.ymin <= seg.ymax)
-						 || (this.ymax >= seg.ymin && this.ymax <= seg.ymax)
-						 || (seg.ymin >= this.ymin && seg.ymin <= this.ymax)
-						 || (seg.ymax >= this.ymin && seg.ymax <= this.ymax)
-						 ); 
+				return this.xmin == seg.xmin && 
+						(
+								(this.ymin >= seg.ymin && this.ymin <= seg.ymax)
+								|| (this.ymax >= seg.ymin && this.ymax <= seg.ymax)
+								|| (seg.ymin >= this.ymin && seg.ymin <= this.ymax)
+								|| (seg.ymax >= this.ymin && seg.ymax <= this.ymax)
+								); 
 			}
 			if (orientation == Direction.RIGHT && seg.orientation == Direction.RIGHT){
-				 return this.ymin == seg.ymin && 
-						 (
-						 (this.xmin >= seg.xmin && this.xmin <= seg.xmax)
-						 || (this.xmax >= seg.xmin && this.xmax <= seg.xmax)
-						 || (seg.xmin >= this.xmin && seg.xmin <= this.xmax)
-						 || (seg.xmax >= this.xmin && seg.xmax <= this.xmax)
-						 ); 
+				return this.ymin == seg.ymin && 
+						(
+								(this.xmin >= seg.xmin && this.xmin <= seg.xmax)
+								|| (this.xmax >= seg.xmin && this.xmax <= seg.xmax)
+								|| (seg.xmin >= this.xmin && seg.xmin <= this.xmax)
+								|| (seg.xmax >= this.xmin && seg.xmax <= this.xmax)
+								); 
 			}
 			if (this.orientation == Direction.DOWN && seg.orientation == Direction.RIGHT){
 				return this.xmin >= seg.xmin && this.xmin <= seg.xmax && seg.ymin >= this.ymin && seg.ymin <= this.ymax;
 			} else {
 				return seg.cross(this);
 			}
-		
+
 		}
 	}
 
@@ -146,7 +147,7 @@ public class GolfMap {
 			move.direction = direction;
 			return move;
 		}
-		
+
 		public Move copyOfCoordsOnly(){
 			Move move = new Move();
 			move.x = x;
@@ -159,7 +160,7 @@ public class GolfMap {
 			seg.xmax = x;
 			seg.ymin = y;
 			seg.ymax = y;
-			
+
 			switch (direction) {
 			case UP: seg.ymin -= gap;
 			seg.orientation = Direction.DOWN;
@@ -174,10 +175,10 @@ public class GolfMap {
 			seg.orientation = Direction.RIGHT;
 			break;
 			}
-			
+
 			return seg;
 		}
-		
+
 		public Move getDestinationPoint(Direction dir, int gap){
 			Move move = new Move();
 			move.direction = dir;
@@ -196,7 +197,7 @@ public class GolfMap {
 			move.gap = gap;
 			return move;
 		}
-		
+
 		public Move MoveToAndGetCopy(Direction dir, int gap){
 			Move move = new Move();
 			move.direction = dir;
@@ -267,7 +268,7 @@ public class GolfMap {
 		public BallTry copyOfThis(){
 			BallTry ball = new BallTry();
 			ball.jumpsLeft = this.jumpsLeft;
-			ball.lastTry = this.lastTry;
+			ball.lastTry = this.lastTry.copyOfThis();
 			ball.order = this.order;
 
 			return ball;
@@ -304,10 +305,10 @@ public class GolfMap {
 			return true;
 		}
 
-		
+
 		@Override
 		public int compareTo(BallTry o) {
-			return Integer.compare(order, ((BallTry) o).order);
+			return Integer.compare(order, o.order);
 		}
 	}
 
@@ -321,7 +322,7 @@ public class GolfMap {
 					+ allHoles + ", allTriesLeft=" + allTriesLeft + "]";
 		}
 
-		List<Move> allMovesDone;
+		List<BallTry> allMovesDone;
 		List<Move> allHoles;
 		List<BallTry> allTriesLeft;
 		int sizeX;
@@ -354,28 +355,54 @@ public class GolfMap {
 			Move move = ballTry.lastTry;
 			int gap = ballTry.jumpsLeft;
 			Segment seg = move.getSegment();
+			List<BallTry> allCross = validateMove(seg, gap);
+			boolean validateMove = allCross == null || allCross.size() == 0;
+			if (!validateMove && allCross.size() == 1){
+				//It can be the end of the last move crossing at the start of this new one
+				BallTry cross = allCross.get(0);
+				if (cross.order == ballTry.order && cross.jumpsLeft == ballTry.jumpsLeft +1){ 
+					Move destination = cross.lastTry.getDestinationPoint(cross.lastTry.direction, cross.jumpsLeft);
+					validateMove = ballTry.lastTry.x == destination.x && ballTry.lastTry.y == destination.y
+							&&
+							!(
+									(ballTry.lastTry.direction == Direction.UP && destination.direction == Direction.DOWN)
+									|| 	(ballTry.lastTry.direction == Direction.DOWN && destination.direction == Direction.UP)
+									|| 	(ballTry.lastTry.direction == Direction.LEFT && destination.direction == Direction.RIGHT)
+									|| 	(ballTry.lastTry.direction == Direction.RIGHT && destination.direction == Direction.LEFT)
+							);
+				}
+			}
+			if (!validateMove){
+				return false;
+			}
 			switch (move.direction){
-			case UP: return move.y - gap >= 0 && validateMove(seg, gap);
-			case LEFT: return move.x - gap >= 0 && validateMove(seg, gap);
-			case DOWN: return move.y + gap < this.sizeY && validateMove(seg, gap);
-			case RIGHT: return move.x + gap < this.sizeX && validateMove(seg, gap);
+			case UP: return move.y - gap >= 0;
+			case LEFT: return move.x - gap >= 0;
+			case DOWN: return move.y + gap < this.sizeY;
+			case RIGHT: return move.x + gap < this.sizeX;
 			}
 			return false;
 		}
 
-		private boolean validateMove(Segment seg, int gap){
-			return allMovesDone == null || allMovesDone.size() == 0 || !allMovesDone.stream().anyMatch(m -> seg.cross(m.getSegment()));
+		private List<BallTry> validateMove(Segment seg, int gap){
+			if (allMovesDone == null || allMovesDone.size() == 0){
+				return null;
+			}
+			return allMovesDone.stream().filter(b -> seg.cross(b.lastTry.getSegment())).collect(Collectors.toList());
 		}
 
 
 		private Board copyOfThis(){
 			Board next = new Board(this.sizeX, this.sizeY);
-			next.allMovesDone = new ArrayList<>(this.allMovesDone);
-			next.allTriesLeft = new ArrayList<>(this.allTriesLeft);
-			next.allHoles = new ArrayList<>(this.allHoles);
+			next.allMovesDone = new ArrayList<>(this.allMovesDone.size());
+			allMovesDone.forEach(e -> next.allMovesDone.add(e.copyOfThis()));
+			next.allTriesLeft = new ArrayList<>(this.allTriesLeft.size());
+			allTriesLeft.forEach(e -> next.allTriesLeft.add(e.copyOfThis()));
+			next.allHoles = new ArrayList<>(this.allHoles.size());
+			allHoles.forEach(e -> next.allHoles.add(e.copyOfThis()));
 			next.sizeX = this.sizeX;
 			next.sizeY = this.sizeY;
-			
+
 			return next;
 		}
 
@@ -399,14 +426,14 @@ public class GolfMap {
 			}
 
 			Board next = copyOfThis();
-			Move move = nextTry.lastTry.copyOfThis();
+			BallTry thisSucessfulTry = nextTry.copyOfThis();
 			nextTry.lastTry.MoveToAndGetCopy(nextDirection, nextTry.jumpsLeft);
-			
+
 			Move dest = nextTry.lastTry.copyOfCoordsOnly();
 			if (next.allHoles.contains(dest)){
 				next.allHoles.remove(dest);
 			}
-			next.allMovesDone.add(move);
+			next.allMovesDone.add(thisSucessfulTry);
 			nextTry.jumpsLeft--;
 			nextTry.lastTry.direction = null;
 			next.allTriesLeft.remove(0);
@@ -520,21 +547,14 @@ public class GolfMap {
 			leavesSeen = new HashSet<>();
 		}
 
-		public List<LeafInter> buildTheTreeForThePathToTheEnd(){
+		public LeafInter buildTheTreeForThePathToTheEnd(){
 
-			List<LeafInter> path = new ArrayList<>();
 
 			Node<LeafInter> rightLeaf = getTheRightPath(tree.root);
 			if (rightLeaf == null){
-				return path;
+				return null;
 			}
-			while (rightLeaf.parent != null){
-				path.add(rightLeaf.data);
-				rightLeaf = rightLeaf.parent;
-			}
-			path.add(tree.root.data);
-			Collections.reverse(path);
-			return path;
+			return rightLeaf.data;
 		}
 
 		private Node<LeafInter> getTheRightPath(Node<LeafInter> root){
@@ -560,7 +580,7 @@ public class GolfMap {
 
 			return null;
 		}
-		
+
 
 
 		private Node<LeafInter> getNextChild(Node<LeafInter> leaf, LeafInter currentChild) {
