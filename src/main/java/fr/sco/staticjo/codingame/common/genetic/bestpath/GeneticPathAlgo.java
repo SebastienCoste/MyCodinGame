@@ -31,7 +31,7 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 			parentbis = parent1;
 		}
 
-		int length = Double.valueOf(uniformRate*parentref.geneSize()).intValue();
+		int length = ThreadLocalRandom.current().nextInt(0,Double.valueOf(uniformRate*parentref.geneSize()).intValue());
 
 		int start = ThreadLocalRandom.current().nextInt(0, parentref.geneSize() - length);
 		byte[] parentRefGenotype = Arrays.copyOfRange(parentref.getGenes(), start, start + length);
@@ -47,7 +47,7 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 			rangeParOff++;
 		}
 		while (range < start+length){
-			newborn.setGene(range, parentref.getGene(range -start));
+			newborn.setGene(range, parentref.getGene(range));
 			range++;
 		}
 		while (rangeParOff < parentbis.geneSize()){
@@ -80,7 +80,7 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 				indiv.setGene(end, gene);
 			}
 		}
-		if (Math.random() <= mutationRate){
+		if (Math.random() <= mutationRate && false){
 			List<Byte> multiple = timesSeen.keySet().stream().filter(e -> timesSeen.get(e) >1).collect(Collectors.toList());
 			if (multiple.size() > 0){
 				int delete = ThreadLocalRandom.current().nextInt(0, multiple.size());
@@ -91,7 +91,7 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 				for (int i = 0; i<genes.length; i++){
 					byte gene = indiv.getGene(i);
 					if (gene == genDelete){
-						if (num > 1){
+						if (num > 0){
 							num--;
 							genes[i] = gene;
 						}  else {
@@ -104,7 +104,7 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 				indiv.setGenes(genes);
 			}
 		}
-		if (Math.random() <= mutationRate){
+		if (Math.random() <= mutationRate && false){
 			int add = ThreadLocalRandom.current().nextInt(0, indiv.geneSize());
 			int posAdd = ThreadLocalRandom.current().nextInt(0, indiv.geneSize());
 			byte[] genes = new byte[indiv.geneSize()+1];
@@ -114,7 +114,7 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 				} else if (i == posAdd){
 					genes[i] = indiv.getGene(add);
 				} else {
-					genes[i+1] = indiv.getGene(i);
+					genes[i] = indiv.getGene(i-1);
 				}
 			}
 			indiv.setGenes(genes);

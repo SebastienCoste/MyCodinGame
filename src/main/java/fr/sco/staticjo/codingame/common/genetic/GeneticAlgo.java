@@ -39,7 +39,7 @@ public class GeneticAlgo<P extends Person> {
 	}
 
 	protected Person crossover(Population<P> pop, Person indiv1, Person indiv2) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		Person newSol = pop.generatePerson(getClassPerson());
+		Person newSol = pop.instanciatePerson(getClassPerson());
 		// Loop through genes
 		for (int i = 0; i < indiv1.geneSize(); i++) {
 			// Crossover

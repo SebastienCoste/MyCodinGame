@@ -1,5 +1,6 @@
 package fr.sco.staticjo.codingame.common.genetic.bestpath;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -80,5 +81,11 @@ public class WorldMap implements Person {
 	public static void setCalc(FitnessCalc calc) {
 		WorldMap.calc = calc;
 	}
+
+	@Override
+	public String toString() {
+		return "WorldMap [genes=" + Arrays.toString(genes) + ", fit=" + getFitness() + "]";
+	}
+
 
 }

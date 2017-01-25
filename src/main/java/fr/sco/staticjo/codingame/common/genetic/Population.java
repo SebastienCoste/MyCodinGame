@@ -11,7 +11,7 @@ public class Population<P extends Person> {
 			for (int i = 0; i < people.length; i++) {
 				Person person = null;
 				try {
-					person = generatePerson(classPerson);
+					person = instanciatePerson(classPerson);
 				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -21,7 +21,7 @@ public class Population<P extends Person> {
 		}
 	}
 
-	public Person generatePerson(Class<P> classPerson) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+	public Person instanciatePerson(Class<P> classPerson) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		return (Person)classPerson.getClassLoader().loadClass(classPerson.getName()).newInstance();
 	}
 
