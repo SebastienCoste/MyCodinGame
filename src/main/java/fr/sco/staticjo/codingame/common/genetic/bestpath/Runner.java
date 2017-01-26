@@ -21,12 +21,8 @@ public class Runner {
 	public static void main(String[] args) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 
         // Set a candidate solution
-		int size = 300;
-<<<<<<< HEAD
-		int sizeMap= 1000;
-=======
-		int sizeMap= 300;
->>>>>>> 9b7b9397504b18e59995e5e72c3df177b9452529
+		int size = 100;
+		int sizeMap= 100;
 		WorldMap.setDefaultGeneLength(size);
 		WorldMap.setPointList(new Point[size]);
 		IntStream.range(0, size).forEach(e -> WorldMap.addPoint(p(e, sizeMap), e));
@@ -59,9 +55,9 @@ public class Runner {
             	System.out.println("Generation: " + generationCount + " Fittest: " + fittest + " time: " + ((new Date().getTime() - init)/1000));
             	
             	List<DisplayLine> lines = IntStream.range(0, bestPath.geneSize() -1)
-            	.mapToObj(e -> new DrawLine(points.get(bestPath.getGene(e)), points.get(bestPath.getGene(e+1))))
+            	.mapToObj(e -> new DrawLine(points.get(bestPath.getGene(e).intValue()), points.get(bestPath.getGene(e+1).intValue())))
             	.collect(Collectors.toList());
-            	lines.add(new DrawLine(points.get(bestPath.getGene(0)), points.get(bestPath.getGene(bestPath.geneSize() -1))));
+            	lines.add(new DrawLine(points.get(bestPath.getGene(0).intValue()), points.get(bestPath.getGene(bestPath.geneSize() -1).intValue())));
             	ex.lines = lines;
     			ex.surface.updateUI();
     			ex.surface.repaint();
