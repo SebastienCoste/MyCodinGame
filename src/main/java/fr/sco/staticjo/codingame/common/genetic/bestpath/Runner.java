@@ -1,12 +1,19 @@
 package fr.sco.staticjo.codingame.common.genetic.bestpath;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import fr.sco.staticjo.codingame.common.genetic.GeneticAlgo;
 import fr.sco.staticjo.codingame.common.genetic.Person;
 import fr.sco.staticjo.codingame.common.genetic.Population;
+import fr.sco.staticjo.codingame.graphics.DisplayLine;
+import fr.sco.staticjo.codingame.graphics.DisplayPoint;
+import fr.sco.staticjo.codingame.graphics.SimpleDrawer;
+import fr.sco.staticjo.codingame.graphics.example.DrawLine;
 
 public class Runner {
 
@@ -15,25 +22,23 @@ public class Runner {
 
         // Set a candidate solution
 		int size = 300;
+<<<<<<< HEAD
 		int sizeMap= 1000;
+=======
+		int sizeMap= 300;
+>>>>>>> 9b7b9397504b18e59995e5e72c3df177b9452529
 		WorldMap.setDefaultGeneLength(size);
 		WorldMap.setPointList(new Point[size]);
 		IntStream.range(0, size).forEach(e -> WorldMap.addPoint(p(e, sizeMap), e));
-//		WorldMap.addPoint(new Point(0, 0, 0), 0);
-//		WorldMap.addPoint(new Point(1, 10, 0), 1);
-//		WorldMap.addPoint(new Point(2, 10, 10), 2);
-//		WorldMap.addPoint(new Point(3, 0, 10), 3);
-//		WorldMap.addPoint(new Point(4, 5, 5), 4);
-//		WorldMap.addPoint(new Point(5, 5, 0), 5);
-//		WorldMap.addPoint(new Point(6, 10, 5), 6);
-//		WorldMap.addPoint(new Point(7, 5, 10), 7);
-//		WorldMap.addPoint(new Point(8, 20, 10), 8);
-//		WorldMap.addPoint(new Point(9, 20, 0), 9);
-//		WorldMap.addPoint(new Point(10, 20, 20), 10);
-//		WorldMap.addPoint(new Point(11, 0, 20), 11);
 		
 		
 		WorldMap.setCalc(new PathCalculator());
+		
+		
+		List<DisplayPoint> points = Arrays.asList(WorldMap.getPointList());
+		SimpleDrawer ex = new SimpleDrawer(points, 500, sizeMap);
+		ex.setVisible(true);
+		
 		
         // Create an initial population
         Population<WorldMap> myPop = new Population<WorldMap>(size, true, WorldMap.class);
@@ -46,11 +51,21 @@ public class Runner {
         long init = new Date().getTime();
 		while (myPop.getFittest().getFitness() >= WorldMap.getCalc().getMaxFitness() && generationCount <300000) {
             generationCount++;
-            int fittest = myPop.getFittest().getFitness();
+            Person bestPath = myPop.getFittest();
+			int fittest = bestPath.getFitness();
             if (fit > fittest){
             	fit = fittest;
             	geneFit = generationCount;
             	System.out.println("Generation: " + generationCount + " Fittest: " + fittest + " time: " + ((new Date().getTime() - init)/1000));
+            	
+            	List<DisplayLine> lines = IntStream.range(0, bestPath.geneSize() -1)
+            	.mapToObj(e -> new DrawLine(points.get(bestPath.getGene(e)), points.get(bestPath.getGene(e+1))))
+            	.collect(Collectors.toList());
+            	lines.add(new DrawLine(points.get(bestPath.getGene(0)), points.get(bestPath.getGene(bestPath.geneSize() -1))));
+            	ex.lines = lines;
+    			ex.surface.updateUI();
+    			ex.surface.repaint();
+            	
             }
             myPop = algorithm.evolvePopulation(myPop);
         }
