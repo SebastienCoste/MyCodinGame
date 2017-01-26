@@ -5,7 +5,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 import fr.sco.staticjo.codingame.common.genetic.GeneticAlgo;
-import fr.sco.staticjo.codingame.common.genetic.Person;
 import fr.sco.staticjo.codingame.common.genetic.Population;
 
 public class Runner {
@@ -19,18 +18,6 @@ public class Runner {
 		WorldMap.setDefaultGeneLength(size);
 		WorldMap.setPointList(new Point[size]);
 		IntStream.range(0, size).forEach(e -> WorldMap.addPoint(p(e, sizeMap), e));
-//		WorldMap.addPoint(new Point(0, 0, 0), 0);
-//		WorldMap.addPoint(new Point(1, 10, 0), 1);
-//		WorldMap.addPoint(new Point(2, 10, 10), 2);
-//		WorldMap.addPoint(new Point(3, 0, 10), 3);
-//		WorldMap.addPoint(new Point(4, 5, 5), 4);
-//		WorldMap.addPoint(new Point(5, 5, 0), 5);
-//		WorldMap.addPoint(new Point(6, 10, 5), 6);
-//		WorldMap.addPoint(new Point(7, 5, 10), 7);
-//		WorldMap.addPoint(new Point(8, 20, 10), 8);
-//		WorldMap.addPoint(new Point(9, 20, 0), 9);
-//		WorldMap.addPoint(new Point(10, 20, 20), 10);
-//		WorldMap.addPoint(new Point(11, 0, 20), 11);
 		
 		
 		WorldMap.setCalc(new PathCalculator());
