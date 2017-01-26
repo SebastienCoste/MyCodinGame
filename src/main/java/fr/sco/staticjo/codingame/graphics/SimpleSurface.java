@@ -1,32 +1,26 @@
-package fr.sco.staticjo.codingame.graphics.example;
+package fr.sco.staticjo.codingame.graphics;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import fr.sco.staticjo.codingame.graphics.DisplayLine;
+public class SimpleSurface extends JPanel implements ActionListener {
 
-public class Surface extends JPanel implements ActionListener {
-
-	private volatile Drawer parent;
+	private volatile SimpleDrawer parent;
 	private final int DELAY = 150;
 	private Timer timer;
+	private int pixel;
+	private int pixelmargin = 0;
 
-	//	public List<DrawPoint> points;
-	public List<DisplayLine> lines;
-
-
-
-	public Surface(Drawer parent) {
+	public SimpleSurface(SimpleDrawer parent) {
 		this.parent = parent;
+		pixel = parent.getPixel();
+		pixelmargin = parent.MARGIN /2;
 		initTimer();
 	}
 
@@ -49,22 +43,18 @@ public class Surface extends JPanel implements ActionListener {
 
 		int w = getWidth();
 		int h = getHeight();
-		Random r = new Random();
 
-		//		points = new ArrayList<>();
-		lines = new ArrayList<>();
-		for (int i = 0; i < 100; i++) {
-			int x = Math.abs(r.nextInt()) % w;
-			int y = Math.abs(r.nextInt()) % h;
-			//			points.add(new DrawPoint(x, y, i));
-
-			g2d.drawLine(x, y, x, y);
-		}
+		parent.points.stream().forEach(p -> g2d.drawOval(p.getX()*pixel + pixelmargin, p.getY()*pixel + pixelmargin, 5, 5));
 		if (parent.lines != null){
 			for (int i = 0; i < parent.lines.size(); i++) {
 				DisplayLine l = parent.lines.get(i);
-				g2d.drawLine(l.getSource().getX(), l.getSource().getY(), l.getDest().getX(), l.getDest().getY());
+				
+				g2d.drawLine(l.getSource().getX()*pixel + pixelmargin, 
+						l.getSource().getY()*pixel + pixelmargin, 
+						l.getDest().getX()*pixel + pixelmargin, 
+						l.getDest().getY()*pixel + pixelmargin);
 			}
+			
 		}
 
 	}

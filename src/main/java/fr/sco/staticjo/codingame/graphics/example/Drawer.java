@@ -17,7 +17,7 @@ public class Drawer extends JFrame {
 
 	public List<DisplayPoint> points;
 	private int size;
-	private Surface surface;
+	public Surface surface;
 	public volatile List<DisplayLine> lines;
 
 	public Drawer(List<DisplayPoint> points, int size) {
