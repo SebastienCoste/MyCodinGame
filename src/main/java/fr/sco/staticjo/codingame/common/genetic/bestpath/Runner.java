@@ -14,8 +14,8 @@ public class Runner {
 	public static void main(String[] args) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 
         // Set a candidate solution
-		int size = 100;
-		int sizeMap= 100;
+		int size = 300;
+		int sizeMap= 1000;
 		WorldMap.setDefaultGeneLength(size);
 		WorldMap.setPointList(new Point[size]);
 		IntStream.range(0, size).forEach(e -> WorldMap.addPoint(p(e, sizeMap), e));

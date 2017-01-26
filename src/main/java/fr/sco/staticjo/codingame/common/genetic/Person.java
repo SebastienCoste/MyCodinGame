@@ -4,9 +4,9 @@ public interface Person{
 
 	void generatePerson();
 
-	public byte getGene(int index);
+	public Long getGene(int index);
 
-	public void setGene(int index, byte value);
+	public void setGene(int index, Long value);
 
 	public int getFitness();
 	

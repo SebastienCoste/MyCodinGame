@@ -12,22 +12,22 @@ import fr.sco.staticjo.codingame.common.genetic.Person;
 public class WorldMap implements Person {
 
 	private static int numberOfCities;
-	private byte[] genes;
+	private Long[] genes;
 	private static FitnessCalc calc;
 	private static Point[] pointList;
 	
 	@Override
 	public void generatePerson() {
-		setGenes(new byte[numberOfCities]);
+		setGenes(new Long[numberOfCities]);
 		List<Integer> allNumbers = IntStream.range(0, numberOfCities).boxed().collect(Collectors.toList());
 		IntStream.range(0, numberOfCities).forEach(e -> {
 			int rand = ThreadLocalRandom.current().nextInt(0, allNumbers.size());
-			setGene(e, allNumbers.get(rand).byteValue());
+			setGene(e, Long.valueOf(allNumbers.get(rand).toString()));
 			allNumbers.remove(rand);
 		});
 		if (geneSize() > numberOfCities){
 			IntStream.range(numberOfCities, geneSize()).forEach(e ->
-			setGene(e, Integer.valueOf(ThreadLocalRandom.current().nextInt(0, numberOfCities)).byteValue()));
+			setGene(e, Long.valueOf(Integer.valueOf(ThreadLocalRandom.current().nextInt(0, numberOfCities)).toString())));
 		}
 	}
 
@@ -36,12 +36,12 @@ public class WorldMap implements Person {
 	}
 
 	@Override
-	public byte getGene(int index) {
+	public Long getGene(int index) {
 		return getGenes()[index];
 	}
 
 	@Override
-	public void setGene(int index, byte value) {
+	public void setGene(int index, Long value) {
 		getGenes()[index] = value;
 	}
 
@@ -66,11 +66,11 @@ public class WorldMap implements Person {
 		pointList = points;
 	}
 
-	public byte[] getGenes() {
+	public Long[] getGenes() {
 		return genes;
 	}
 
-	public void setGenes(byte[] genes) {
+	public void setGenes(Long[] genes) {
 		this.genes = genes;
 	}
 

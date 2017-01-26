@@ -11,8 +11,8 @@ public class PathCalculator implements FitnessCalc {
 	public int getFitness(Person person) {
 		WorldMap map = (WorldMap) person;
 		Point[] points = WorldMap.getPointList();
-		double sum = IntStream.range(0, map.geneSize()-1).mapToDouble(e -> points[map.getGene(e)].getDistanceTo(points[map.getGene(e+1)])).sum();
-		return Double.valueOf(sum + points[map.getGene(0)].getDistanceTo(points[map.getGene(map.geneSize()-1)])).intValue();
+		double sum = IntStream.range(0, map.geneSize()-1).mapToDouble(e -> points[map.getGene(e).intValue()].getDistanceTo(points[map.getGene(e+1).intValue()])).sum();
+		return Double.valueOf(sum + points[map.getGene(0).intValue()].getDistanceTo(points[map.getGene(map.geneSize()-1).intValue()])).intValue();
 	}
 
 	@Override

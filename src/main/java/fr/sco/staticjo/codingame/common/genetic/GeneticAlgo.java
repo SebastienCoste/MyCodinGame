@@ -57,7 +57,7 @@ public class GeneticAlgo<P extends Person> {
 	        for (int i = 0; i < indiv.geneSize(); i++) {
 	            if (Math.random() <= mutationRate) {
 	                // Create random gene
-	                byte gene = (byte) Math.round(Math.random());
+	                Long gene = (Long) Math.round(Math.random());
 	                indiv.setGene(i, gene);
 	            }
 	        }

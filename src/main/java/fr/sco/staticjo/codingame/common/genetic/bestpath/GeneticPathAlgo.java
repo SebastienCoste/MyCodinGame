@@ -24,9 +24,9 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 		WorldMap parentref = parent1;
 		WorldMap parentbis = parent2;
 		if (useParent1){
-			newborn.setGenes(new byte[parent1.geneSize()]);
+			newborn.setGenes(new Long[parent1.geneSize()]);
 		} else {
-			newborn.setGenes(new byte[parent2.geneSize()]);
+			newborn.setGenes(new Long[parent2.geneSize()]);
 			parentref = parent2;
 			parentbis = parent1;
 		}
@@ -34,12 +34,12 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 		int length = ThreadLocalRandom.current().nextInt(0,Double.valueOf(uniformRate*parentref.geneSize()).intValue());
 
 		int start = ThreadLocalRandom.current().nextInt(0, parentref.geneSize() - length);
-		byte[] parentRefGenotype = Arrays.copyOfRange(parentref.getGenes(), start, start + length);
-		List<Byte> parentRefGenotypeList = IntStream.range(0, parentRefGenotype.length).mapToObj(e -> parentRefGenotype[e]).collect(Collectors.toList());
+		Long[] parentRefGenotype = Arrays.copyOfRange(parentref.getGenes(), start, start + length);
+		List<Long> parentRefGenotypeList = IntStream.range(0, parentRefGenotype.length).mapToObj(e -> parentRefGenotype[e]).collect(Collectors.toList());
 		int range = 0;
 		int rangeParOff = 0;
 		while (range < start){
-			byte testGene = parentbis.getGene(rangeParOff);
+			Long testGene = parentbis.getGene(rangeParOff);
 			if (!parentRefGenotypeList.contains(testGene)){
 				newborn.setGene(range, testGene);
 				range++;
@@ -51,7 +51,7 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 			range++;
 		}
 		while (rangeParOff < parentbis.geneSize()){
-			byte testGene = parentbis.getGene(rangeParOff);
+			Long testGene = parentbis.getGene(rangeParOff);
 			if (!parentRefGenotypeList.contains(testGene)){
 				newborn.setGene(range, testGene);
 				range++;
@@ -64,9 +64,9 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 	@Override
 	protected void mutate(Person person) {
 		WorldMap indiv = (WorldMap) person;
-		Map<Byte, Integer> timesSeen = new HashMap<>();
+		Map<Long, Integer> timesSeen = new HashMap<>();
 		for (int i = 0; i < indiv.geneSize(); i++) {
-			byte gene = indiv.getGene(i);
+			Long gene = indiv.getGene(i);
 			Integer seen = timesSeen.get(gene);
 			if (seen == null){
 				seen = Integer.valueOf(1);
@@ -81,15 +81,15 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 			}
 		}
 		if (Math.random() <= mutationRate && false){
-			List<Byte> multiple = timesSeen.keySet().stream().filter(e -> timesSeen.get(e) >1).collect(Collectors.toList());
+			List<Long> multiple = timesSeen.keySet().stream().filter(e -> timesSeen.get(e) >1).collect(Collectors.toList());
 			if (multiple.size() > 0){
 				int delete = ThreadLocalRandom.current().nextInt(0, multiple.size());
-				byte genDelete = multiple.get(delete);
+				Long genDelete = multiple.get(delete);
 				int num = ThreadLocalRandom.current().nextInt(0, timesSeen.get(genDelete));
-				byte[] genes = new byte[indiv.geneSize()-1];
+				Long[] genes = new Long[indiv.geneSize()-1];
 				int offSet = 0;
 				for (int i = 0; i<genes.length; i++){
-					byte gene = indiv.getGene(i);
+					Long gene = indiv.getGene(i);
 					if (gene == genDelete){
 						if (num > 0){
 							num--;
@@ -107,7 +107,7 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 		if (Math.random() <= mutationRate && false){
 			int add = ThreadLocalRandom.current().nextInt(0, indiv.geneSize());
 			int posAdd = ThreadLocalRandom.current().nextInt(0, indiv.geneSize());
-			byte[] genes = new byte[indiv.geneSize()+1];
+			Long[] genes = new Long[indiv.geneSize()+1];
 			for (int i = 0; i<indiv.geneSize()+1; i++){
 				if (i < posAdd){
 					genes[i] = indiv.getGene(i);
