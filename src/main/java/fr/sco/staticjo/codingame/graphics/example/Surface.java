@@ -12,7 +12,7 @@ import java.util.Random;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import fr.sco.staticjo.codingame.graphics.example.Drawer;
+import fr.sco.staticjo.codingame.graphics.DisplayLine;
 
 class Surface extends JPanel implements ActionListener {
 
@@ -20,10 +20,10 @@ class Surface extends JPanel implements ActionListener {
 	private final int DELAY = 150;
 	private Timer timer;
 
-//	public List<DrawPoint> points;
-	public List<DrawLine> lines;
+	//	public List<DrawPoint> points;
+	public List<DisplayLine> lines;
 
-	
+
 
 	public Surface(Drawer parent) {
 		this.parent = parent;
@@ -51,20 +51,20 @@ class Surface extends JPanel implements ActionListener {
 		int h = getHeight();
 		Random r = new Random();
 
-//		points = new ArrayList<>();
+		//		points = new ArrayList<>();
 		lines = new ArrayList<>();
 		for (int i = 0; i < 100; i++) {
 			int x = Math.abs(r.nextInt()) % w;
 			int y = Math.abs(r.nextInt()) % h;
-//			points.add(new DrawPoint(x, y, i));
+			//			points.add(new DrawPoint(x, y, i));
 
 			g2d.drawLine(x, y, x, y);
 		}
 		if (parent.lines != null){
-		for (int i = 0; i < parent.lines.size(); i++) {
-				DrawLine l = parent.lines.get(i);
+			for (int i = 0; i < parent.lines.size(); i++) {
+				DisplayLine l = parent.lines.get(i);
 				g2d.drawLine(l.getSource().getX(), l.getSource().getY(), l.getDest().getX(), l.getDest().getY());
-		}
+			}
 		}
 
 	}
@@ -81,11 +81,5 @@ class Surface extends JPanel implements ActionListener {
 		repaint();
 	}
 
-
-
-
-	public List<DrawLine> getLines() {
-		return parent.lines;
-	}
 
 }

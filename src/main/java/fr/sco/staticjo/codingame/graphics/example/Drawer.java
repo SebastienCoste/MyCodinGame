@@ -10,14 +10,17 @@ import java.util.stream.IntStream;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
+import fr.sco.staticjo.codingame.graphics.DisplayLine;
+import fr.sco.staticjo.codingame.graphics.DisplayPoint;
+
 public class Drawer extends JFrame {
 
-	public List<DrawPoint> points;
+	public List<DisplayPoint> points;
 	private int size;
 	private Surface surface;
-	public volatile List<DrawLine> lines;
+	public volatile List<DisplayLine> lines;
 
-	public Drawer(List<DrawPoint> points, int size) {
+	public Drawer(List<DisplayPoint> points, int size) {
 		this.points = points;
 		this.size = size;
 		surface = new Surface(this);
@@ -50,7 +53,7 @@ public class Drawer extends JFrame {
 
 		int end = 200;
 		int size = 400;
-		List<DrawPoint> points = IntStream.range(0, end).mapToObj(e -> p(e, size)).collect(Collectors.toList());
+		List<DisplayPoint> points = IntStream.range(0, end).mapToObj(e -> p(e, size)).collect(Collectors.toList());
 
 
 		Drawer ex = new Drawer(points, size);
@@ -62,7 +65,7 @@ public class Drawer extends JFrame {
 			} catch (Exception e1) {
 			}
 			System.err.println("ex" + a);
-			List<DrawLine> lines = IntStream.range(1, ex.points.size()/2-2)
+			List<DisplayLine> lines = IntStream.range(1, ex.points.size()/2-2)
 					.mapToObj(e -> l(ThreadLocalRandom.current().nextInt(0,e), 2*ThreadLocalRandom.current().nextInt(0,e), points))
 					.collect(Collectors.toList());
 			ex.lines = lines;
@@ -73,18 +76,18 @@ public class Drawer extends JFrame {
 				);
 	}
 
-	static DrawLine l(int s, int d, List<DrawPoint> p){
+	static DisplayLine l(int s, int d, List<DisplayPoint> p){
 		return new DrawLine(p.get(s), p.get(d));
 	}
 
-	private static DrawPoint p(int id, int size){
+	private static DisplayPoint p(int id, int size){
 		return new DrawPoint(ThreadLocalRandom.current().nextInt(0,size), ThreadLocalRandom.current().nextInt(0,size), id);
 	}
 
 	public Surface getSurface(){
 		return surface;
 	}
-	public List<DrawLine> getLines() {
+	public List<DisplayLine> getLines() {
 		return lines;
 	}
 }

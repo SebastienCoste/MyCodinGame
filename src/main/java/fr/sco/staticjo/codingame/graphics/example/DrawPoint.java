@@ -1,6 +1,8 @@
 package fr.sco.staticjo.codingame.graphics.example;
 
-public class DrawPoint {
+import fr.sco.staticjo.codingame.graphics.DisplayPoint;
+
+public class DrawPoint implements DisplayPoint {
 
 	private int x;
 	private int y;
@@ -11,22 +13,28 @@ public class DrawPoint {
 		y = yy;
 		this.id = id;
 	}
-	
+
+	@Override
 	public int getX() {
 		return x;
 	}
+	@Override
 	public void setX(int x) {
 		this.x = x;
 	}
+	@Override
 	public int getY() {
 		return y;
 	}
+	@Override
 	public void setY(int y) {
 		this.y = y;
 	}
+	@Override
 	public int getId() {
 		return id;
 	}
+	@Override
 	public void setId(int id) {
 		this.id = id;
 	}

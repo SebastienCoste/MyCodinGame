@@ -1,25 +1,32 @@
 package fr.sco.staticjo.codingame.graphics.example;
 
-public class DrawLine {
+import fr.sco.staticjo.codingame.graphics.DisplayLine;
+import fr.sco.staticjo.codingame.graphics.DisplayPoint;
 
-	private DrawPoint source;
-	private DrawPoint dest;
+public class DrawLine implements DisplayLine{
+
+	private DisplayPoint source;
+	private DisplayPoint dest;
 	
-	public DrawLine(DrawPoint start, DrawPoint end){
+	public DrawLine(DisplayPoint start, DisplayPoint end){
 		source = start;
 		dest = end;
 	}
 	
-	public DrawPoint getSource() {
+	@Override
+	public DisplayPoint getSource() {
 		return source;
 	}
-	public void setSource(DrawPoint source) {
+	@Override
+	public void setSource(DisplayPoint source) {
 		this.source = source;
 	}
-	public DrawPoint getDest() {
+	@Override
+	public DisplayPoint getDest() {
 		return dest;
 	}
-	public void setDest(DrawPoint dest) {
+	@Override
+	public void setDest(DisplayPoint dest) {
 		this.dest = dest;
 	}
 	
