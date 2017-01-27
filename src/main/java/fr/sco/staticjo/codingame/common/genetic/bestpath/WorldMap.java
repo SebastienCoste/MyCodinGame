@@ -53,8 +53,8 @@ public class WorldMap implements Person {
 
 			@Override
 			public int compare(Point o1, Point o2) {
-				int id1 = o1.getId()+1;
-				int id2 = o2.getId()+1;
+				int id1 = o1.getX()+1;
+				int id2 = o2.getX()+1;
 				int x1 = (id1-id1%sqrt)/sqrt;
 				int x2 = (id2-id2%sqrt)/sqrt;
 				return x1 == x2 ? Integer.compare(o1.getY(), o2.getY()) : Integer.compare(x1, x2);
