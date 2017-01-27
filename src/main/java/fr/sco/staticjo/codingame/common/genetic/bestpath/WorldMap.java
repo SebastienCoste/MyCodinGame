@@ -1,9 +1,11 @@
 package fr.sco.staticjo.codingame.common.genetic.bestpath;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import fr.sco.staticjo.codingame.common.genetic.FitnessCalc;
@@ -11,19 +13,24 @@ import fr.sco.staticjo.codingame.common.genetic.Person;
 
 public class WorldMap implements Person {
 
-	private static int numberOfCities;
+	public static int numberOfCities;
 	private Long[] genes;
 	private static FitnessCalc calc;
 	private static Point[] pointList;
 	
 	@Override
 	public void generatePerson() {
+		
+		List<Point> sortedYpoints = new ArrayList<>(Arrays.asList(pointList));
+		
+		Collections.sort(sortedYpoints, getComparatorY(sortedYpoints.size()));
+		
 		setGenes(new Long[numberOfCities]);
-		List<Integer> allNumbers = IntStream.range(0, numberOfCities).boxed().collect(Collectors.toList());
+//		List<Integer> allNumbers = IntStream.range(0, numberOfCities).boxed().collect(Collectors.toList());
 		IntStream.range(0, numberOfCities).forEach(e -> {
-			int rand = ThreadLocalRandom.current().nextInt(0, allNumbers.size());
-			setGene(e, Long.valueOf(allNumbers.get(rand).toString()));
-			allNumbers.remove(rand);
+//			int rand = ThreadLocalRandom.current().nextInt(0, allNumbers.size());
+			setGene(e, Long.valueOf(sortedYpoints.get(e).getId()));
+//			allNumbers.remove(rand);
 		});
 		if (geneSize() > numberOfCities){
 			IntStream.range(numberOfCities, geneSize()).forEach(e ->
@@ -31,6 +38,23 @@ public class WorldMap implements Person {
 		}
 	}
 
+	public Comparator<Point> getComparatorY(int size){
+		
+		int sqrt = Double.valueOf(Math.sqrt(size)).intValue();
+		return new Comparator<Point>() {
+
+			@Override
+			public int compare(Point o1, Point o2) {
+				int id1 = o1.getId()+1;
+				int id2 = o2.getId()+1;
+				int x1 = (id1-id1%sqrt)/sqrt;
+				int x2 = (id2-id2%sqrt)/sqrt;
+				return x1 == x2 ? Integer.compare(o1.getY(), o2.getY()) : Integer.compare(x1, x2);
+			}
+		};
+	}
+	
+	
 	public static void setDefaultGeneLength(int length) {
 		numberOfCities = length;
 	}

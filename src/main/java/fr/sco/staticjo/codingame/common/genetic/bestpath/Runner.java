@@ -20,8 +20,8 @@ public class Runner {
 	
 	public static void main(String[] args) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 
-        // Set a candidate solution
-		int size = 100;
+        //Set variables before
+		int size = 300;
 		int sizeMap= 100;
 		WorldMap.setDefaultGeneLength(size);
 		WorldMap.setPointList(new Point[size]);
@@ -41,11 +41,11 @@ public class Runner {
         
         // Evolve our population until we reach an optimum solution
         int generationCount = 0;
-        GeneticAlgo<WorldMap> algorithm = new GeneticPathAlgo();
+        GeneticAlgo<WorldMap> algorithm = new GeneticPathAlgo(size);
         int fit = Integer.MAX_VALUE;
         int geneFit = 0;
         long init = new Date().getTime();
-		while (myPop.getFittest().getFitness() >= WorldMap.getCalc().getMaxFitness() && generationCount <300000) {
+		while (myPop.getFittest().getFitness() >= WorldMap.getCalc().getMaxFitness() && generationCount <900000) {
             generationCount++;
             Person bestPath = myPop.getFittest();
 			int fittest = bestPath.getFitness();

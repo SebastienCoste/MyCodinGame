@@ -1,8 +1,10 @@
 package fr.sco.staticjo.codingame.common.genetic;
 
-public class Population<P extends Person> {
+public class Population<P extends Person>{
 
 	Person[] people;
+	
+	
 	
 	public Population(int populationSize, boolean initialise, Class<P> classPerson) { 
 		people = new Person[populationSize];
@@ -48,5 +50,7 @@ public class Population<P extends Person> {
 	public void savePerson(int index, Person indiv) {
 		people[index] = indiv;
 	}
+
+
 
 }

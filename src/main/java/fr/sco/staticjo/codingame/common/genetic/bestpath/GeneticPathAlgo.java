@@ -15,6 +15,14 @@ import fr.sco.staticjo.codingame.common.genetic.Population;
 public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 
 
+	
+	private double genomeMutationRate;
+	
+	public GeneticPathAlgo(int populationSize){
+		super(populationSize);
+		genomeMutationRate = Math.pow(1 - mutationRate, WorldMap.numberOfCities);
+	}
+	
 	@Override
 	protected Person crossover(Population<WorldMap> pop, Person indiv1, Person indiv2) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		WorldMap newborn = new WorldMap();
@@ -79,6 +87,18 @@ public class GeneticPathAlgo extends GeneticAlgo<WorldMap> {
 				indiv.setGene(i, indiv.getGene(end));
 				indiv.setGene(end, gene);
 			}
+		}
+		
+		if (Math.random() <= genomeMutationRate){
+			int start = ThreadLocalRandom.current().nextInt(0, indiv.geneSize()-1);
+			int end = ThreadLocalRandom.current().nextInt(start, indiv.geneSize());
+			Long[] save = new Long[end-start +1];
+			IntStream.range(start, end +1).forEach(e ->  {
+				save[e-start] = indiv.getGene(end + start - e);
+			});
+			IntStream.range(start, end +1).forEach(e ->  {
+				indiv.setGene(e, save[e-start]);
+			});
 		}
 		if (Math.random() <= mutationRate && false){
 			List<Long> multiple = timesSeen.keySet().stream().filter(e -> timesSeen.get(e) >1).collect(Collectors.toList());

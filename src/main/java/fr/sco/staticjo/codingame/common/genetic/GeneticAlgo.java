@@ -6,14 +6,17 @@ public class GeneticAlgo<P extends Person> {
 	public static double uniformRate = 0.5;
 	public static double mutationRate = 0.015;
 	public static int tournamentSize = 5;
+	public static int numberOfThreads = 4;
 	public static boolean elitism = true;
 	private Class<P> classPerson;
+	private ThreadPool pool;
 	
-	
-	public GeneticAlgo(){
+	public GeneticAlgo(int populationSize){
+		pool = new ThreadPool<>(numberOfThreads, populationSize, this);
 	}
 	
-	public GeneticAlgo(Class<P> clazz){
+	public GeneticAlgo(int populationSize, Class<P> clazz){
+		this(populationSize);
 		setClassPerson(clazz);
 	}
 	
@@ -25,17 +28,22 @@ public class GeneticAlgo<P extends Person> {
 		}
 
 		for (int i = (elitism?1:0); i < pop.size(); i++) {
-			Person indiv1 = tournamentSelection(pop);
-			Person indiv2 = tournamentSelection(pop);
-			Person newIndiv = crossover(pop, indiv1, indiv2);
+//			pool.execute(pop);
+			Person newIndiv = generateChild(pop);
 			newPopulation.savePerson(i, newIndiv);
 		}
 
-		for (int i = (elitism?1:0); i < newPopulation.size(); i++) {
-			mutate(newPopulation.getPerson(i));
-		}
 
 		return newPopulation;
+	}
+
+	public Person generateChild(Population<P> pop)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		Person indiv1 = tournamentSelection(pop);
+		Person indiv2 = tournamentSelection(pop);
+		Person newIndiv = crossover(pop, indiv1, indiv2);
+		mutate(newIndiv);
+		return newIndiv;
 	}
 
 	protected Person crossover(Population<P> pop, Person indiv1, Person indiv2) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
@@ -57,7 +65,7 @@ public class GeneticAlgo<P extends Person> {
 	        for (int i = 0; i < indiv.geneSize(); i++) {
 	            if (Math.random() <= mutationRate) {
 	                // Create random gene
-	                Long gene = (Long) Math.round(Math.random());
+	                Long gene = Math.round(Math.random());
 	                indiv.setGene(i, gene);
 	            }
 	        }
