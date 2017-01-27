@@ -3,10 +3,10 @@ package fr.sco.staticjo.codingame.common.genetic;
 public class GeneticAlgo<P extends Person> {
 
 
-	protected static final double uniformRate = 0.5;
-	protected static final double mutationRate = 0.015;
-	protected static final int tournamentSize = 5;
-	protected static final boolean elitism = true;
+	public static double uniformRate = 0.5;
+	public static double mutationRate = 0.015;
+	public static int tournamentSize = 5;
+	public static boolean elitism = true;
 	private Class<P> classPerson;
 	
 	
