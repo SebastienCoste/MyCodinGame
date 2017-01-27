@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import fr.sco.staticjo.codingame.common.genetic.FitnessCalc;
@@ -26,12 +27,19 @@ public class WorldMap implements Person {
 		Collections.sort(sortedYpoints, getComparatorY(sortedYpoints.size()));
 		
 		setGenes(new Long[numberOfCities]);
-//		List<Integer> allNumbers = IntStream.range(0, numberOfCities).boxed().collect(Collectors.toList());
+		if (ThreadLocalRandom.current().nextInt(0,numberOfCities/2 +1)%(numberOfCities/2) != 0){
+			
+		List<Integer> allNumbers = IntStream.range(0, numberOfCities).boxed().collect(Collectors.toList());
 		IntStream.range(0, numberOfCities).forEach(e -> {
-//			int rand = ThreadLocalRandom.current().nextInt(0, allNumbers.size());
-			setGene(e, Long.valueOf(sortedYpoints.get(e).getId()));
-//			allNumbers.remove(rand);
+			int rand = ThreadLocalRandom.current().nextInt(0, allNumbers.size());
+			setGene(e, Long.valueOf(allNumbers.get(rand).toString()));
+			allNumbers.remove(rand);
 		});
+		} else {
+			IntStream.range(0, numberOfCities).forEach(e -> {
+				setGene(e, Long.valueOf(sortedYpoints.get(e).getId()));
+			});
+		}
 		if (geneSize() > numberOfCities){
 			IntStream.range(numberOfCities, geneSize()).forEach(e ->
 			setGene(e, Long.valueOf(Integer.valueOf(ThreadLocalRandom.current().nextInt(0, numberOfCities)).toString())));
