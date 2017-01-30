@@ -1,4 +1,4 @@
-package fr.sco.staticjo.codingame.common.genetic;
+package fr.sco.staticjo.codingame.common.genetic.multithread;
 
 import java.util.LinkedList;
 import java.util.List;

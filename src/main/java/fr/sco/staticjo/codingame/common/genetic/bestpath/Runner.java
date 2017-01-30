@@ -21,7 +21,7 @@ public class Runner {
 	public static void main(String[] args) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 
         //Set variables before
-		int size = 200;
+		int size = 100;
 		int sizeMap= 100;
 		WorldMap.setDefaultGeneLength(size);
 		WorldMap.setPointList(new Point[size]);
@@ -63,7 +63,12 @@ public class Runner {
     			ex.surface.repaint();
             	
             }
-            myPop = algorithm.evolvePopulation(myPop);
+            try {
+				myPop = algorithm.evolvePopulation(myPop);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
         }
         System.out.println("Solution found!");
         System.out.println("Generation: " + geneFit);
@@ -74,5 +79,6 @@ public class Runner {
 
 	private static Point p(int e, int max) {
 		return new Point(e, ThreadLocalRandom.current().nextInt(0, max), ThreadLocalRandom.current().nextInt(0, max));
+//		return new Point(e, e%3>0?ThreadLocalRandom.current().nextInt(0, max):e, e%3<2?e:ThreadLocalRandom.current().nextInt(0, max));
 	}
 }
