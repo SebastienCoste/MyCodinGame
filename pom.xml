@@ -11,8 +11,8 @@
   <ciManagement />
 
   <scm>
-    <developerConnection>scm:git:https://github.com/citerus/dddsample-core</developerConnection>
-    <url>https://github.com/citerus/dddsample-core</url>
+    <developerConnection>scm:git:https://github.com/StaticJo/MyCodinGame</developerConnection>
+    <url>https://github.com/StaticJo/MyCodinGame</url>
   </scm>
   <properties>
     <java.version>1.8</java.version>
