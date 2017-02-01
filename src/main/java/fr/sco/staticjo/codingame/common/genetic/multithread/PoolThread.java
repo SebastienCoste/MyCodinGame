@@ -1,5 +1,8 @@
-package fr.sco.staticjo.codingame.common.genetic;
+package fr.sco.staticjo.codingame.common.genetic.multithread;
 
+import fr.sco.staticjo.codingame.common.genetic.GeneticAlgo;
+import fr.sco.staticjo.codingame.common.genetic.Person;
+import fr.sco.staticjo.codingame.common.genetic.Population;
 
 public class PoolThread<P extends Person>  extends Thread {
 

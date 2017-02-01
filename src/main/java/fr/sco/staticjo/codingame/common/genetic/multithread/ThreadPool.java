@@ -1,7 +1,11 @@
-package fr.sco.staticjo.codingame.common.genetic;
+package fr.sco.staticjo.codingame.common.genetic.multithread;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.sco.staticjo.codingame.common.genetic.GeneticAlgo;
+import fr.sco.staticjo.codingame.common.genetic.Person;
+import fr.sco.staticjo.codingame.common.genetic.Population;
 
 public class ThreadPool<P extends Person> {
 
@@ -34,6 +38,10 @@ public class ThreadPool<P extends Person> {
         for(PoolThread<P> thread : threads){
            thread.doStop();
         }
+    }
+    
+    public Person getResult() throws InterruptedException{
+			return responseQueue.dequeue();
     }
 
 }
